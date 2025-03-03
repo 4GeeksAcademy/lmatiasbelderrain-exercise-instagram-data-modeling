@@ -19,6 +19,8 @@ class User(Base):
     mail: Mapped[str] = mapped_column(nullable=False)
     posts=relationship("Post",back_populates="user")
     comments=relationship("Comment",back_populates="author")
+    follower=relationship("Follower",back_populates="follower")
+    following=relationship("Follower",back_populates="following")
 
 
 class Post(Base):
@@ -31,9 +33,26 @@ class Post(Base):
     user=relationship("User",back_populates="posts")
     # relacion con la tabla Comments
     comments=relationship("Comment",back_populates="post")
+    media=relationship("Media",back_populates="post")
 
-    def to_dict(self):
-        return {}
+class Media(Base):
+    __tablename__ = 'media'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    type: Mapped[str] = mapped_column(nullable=False)
+    url: Mapped[str] = mapped_column(nullable=False)
+    post_id: Mapped[int] = mapped_column(ForeignKey("post.id"))
+    post=relationship("Post",back_populates="media")
+
+class Follower(Base):
+    __tablename__ = 'follower'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_from_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    user_from=relationship("User",back_populates="follower")
+    user_to_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    user_to=relationship("User",back_populates="following")
+    
+
+   
 
 class Comments(Base):
     __tablename__ = 'comments'
